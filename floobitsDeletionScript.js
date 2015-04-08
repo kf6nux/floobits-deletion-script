@@ -14,6 +14,12 @@
 
 if (document.URL === 'https://floobits.com/HackReactor') {
 
+    var close = GM_getValue('close', 0);
+    if (close > 0) {
+        GM_setValue('close', close - 1);
+        window.close();
+    }
+
     function MarkButton (domNode, href){
         this.node = $(domNode);
         this.href = href;
@@ -41,6 +47,7 @@ if (document.URL === 'https://floobits.com/HackReactor') {
         if(this.state === 'marked') {
             GM_setValue(this.href, 'delete');
             GM_openInTab(this.href, {active: false});
+            GM_setValue('close', GM_getValue('close', 0) + 1);
         }
     };
 
@@ -72,7 +79,7 @@ if (document.URL === 'https://floobits.com/HackReactor') {
         for (var i = 0; i < buttons.length; i++) {
             buttons[i].queueForDeletion();
         }
-        setTimeout(location.reload.bind(location), 5000);
+        setTimeout(document.location.reload.bind(document.location), 10000);
     };
 
     function selAllFun () {

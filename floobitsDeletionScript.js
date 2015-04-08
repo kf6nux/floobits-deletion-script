@@ -60,6 +60,7 @@ if (document.URL === 'https://floobits.com/HackReactor') {
 
     var workspaces = $('.info-workspace-name');
     var buttons = [];
+    var selAllStatus = false;
 
     for (var i = 0; i < workspaces.length; i++) {
         buttons.push( new MarkButton(workspaces[i], $('a.workspace-settings')[i].href) );
@@ -83,8 +84,18 @@ if (document.URL === 'https://floobits.com/HackReactor') {
     };
 
     function selAllFun () {
-        for (var i = 0; i < buttons.length; i++) {
-            buttons[i].select();
+        if (selAllStatus) {
+            selAllStatus = false;
+            for (var i = 0; i < buttons.length; i++) {
+                buttons[i].state = 'marked';
+                buttons[i].select();
+            }
+        } else {
+            selAllStatus = true;
+            for (var i = 0; i < buttons.length; i++) {
+                buttons[i].state = 'unmarked';
+                buttons[i].select();
+            }
         }
     };
     
@@ -97,6 +108,6 @@ else if (document.URL.endsWith('settings')) {
     var marked = GM_getValue(key);
     if (marked === 'delete') {
         GM_deleteValue(key);
-        $('input.btn-danger').click()
+        $('input.btn-danger').click();
     }    
 }

@@ -63,7 +63,7 @@ if (document.URL === 'https://floobits.com/HackReactor') {
     var selAllStatus = false;
 
     for (var i = 0; i < workspaces.length; i++) {
-        buttons.push( new MarkButton(workspaces[i], $('a.workspace-settings')[i].href) );
+        buttons.push( new MarkButton(workspaces[i], $('.info-workspace-buttons')[i].children[0].href) );
     }
 
     var selAll = $('<button class="btn btn-info" style="background-color: pink">Select All</button>');

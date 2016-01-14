@@ -5,20 +5,9 @@
 // @description  bulk deletion options
 // @author       Benjamin Zarzycki
 // @match        https://floobits.com/HackReactor*
-// @grant        GM_getValue
-// @grant        GM_setValue
-// @grant        GM_openInTab
-// @grant        GM_deleteValue
-// @grant        GM_listValues
 // ==/UserScript==
 
 if (document.URL === 'https://floobits.com/HackReactor') {
-
-    var close = GM_getValue('close', 0);
-    if (close > 0) {
-        GM_setValue('close', close - 1);
-        window.close();
-    }
 
     function MarkButton (domNode, href){
         this.node = $(domNode);
@@ -43,20 +32,19 @@ if (document.URL === 'https://floobits.com/HackReactor') {
         }
     };
 
-    MarkButton.prototype.queueForDeletion = function () {
+    MarkButton.prototype.deleteMarked = function () {
         if(this.state === 'marked') {
-            GM_setValue(this.href, 'delete');
-            GM_openInTab(this.href, {active: false});
-            GM_setValue('close', GM_getValue('close', 0) + 1);
+            $.ajax ( {
+                type:       'POST',
+                async:      false,
+                url:        this.href.slice(0, -8) + "delete",
+                data:       {csrfmiddlewaretoken: unsafeWindow.fl.csrfToken},
+                success:    function (apiJson) {
+                    console.log('deleted');
+                }
+            } );
         }
     };
-
-// Potential future feature to allow user to cancel a deletion(s) if they act fast enough.
-//    MarkButton.prototype.deQueueForDeletion = function () {
-//        GM_deleteValue(this.href);
-//    };
-
-
 
     var workspaces = $('.info-workspace-name');
     var buttons = [];
@@ -78,9 +66,9 @@ if (document.URL === 'https://floobits.com/HackReactor') {
 
     function deleteSelected () {
         for (var i = 0; i < buttons.length; i++) {
-            buttons[i].queueForDeletion();
+            buttons[i].deleteMarked();
         }
-        setTimeout(document.location.reload.bind(document.location), 10000);
+        document.location.reload();
     };
 
     function selAllFun () {
@@ -98,16 +86,6 @@ if (document.URL === 'https://floobits.com/HackReactor') {
             }
         }
     };
-    
+
 }
 
-else if (document.URL.endsWith('settings')) {
-    console.log('keys in storage', GM_listValues());
-    
-    var key = document.URL;
-    var marked = GM_getValue(key);
-    if (marked === 'delete') {
-        GM_deleteValue(key);
-        $('input.btn-danger').click();
-    }    
-}
